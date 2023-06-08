@@ -4,6 +4,21 @@ namespace Scripts.Path
 {
     public static class Bezier
     {
+        public static float CalculateLength(BezierSpline spline, int steps = 1000)
+        {
+            float totalSplineLength = 0f;
+
+            for (int i = 0; i < steps - 1; i++)
+            {
+                var p1 = spline.GetPoint(i / (float)steps);
+                var p2 = spline.GetPoint((i + 1) / (float)steps);
+
+                totalSplineLength += Vector3.Distance(p1, p2);
+            }
+
+            return totalSplineLength;
+        }
+
         public static Vector3 GetPoint(Vector3 p0, Vector3 p1, Vector3 p2, float t)
         {
             t = Mathf.Clamp01(t);

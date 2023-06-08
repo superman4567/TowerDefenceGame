@@ -15,29 +15,14 @@ namespace Scripts.Controller
 
         public float Progress { get; private set; }
 
-        private void CalculateConstantSpeed()
-        {
-            float totalSplineLength = 0f;
-
-            for (int i = 0; i < 1000 - 1; i++)
-            {
-                var p1 = spline.GetPoint(i / 1000f);
-                var p2 = spline.GetPoint((i + 1) / 1000f);
-
-                totalSplineLength += Vector3.Distance(p1, p2);
-            }
-
-            duration = totalSplineLength / speed;
-        }
-
         private void Start()
         {
-            CalculateConstantSpeed();
+            duration = Bezier.CalculateLength(spline) / speed;
         }
 
         private void OnValidate()
         {
-            CalculateConstantSpeed();
+            duration = Bezier.CalculateLength(spline) / speed;
         }
 
         private void Finish()

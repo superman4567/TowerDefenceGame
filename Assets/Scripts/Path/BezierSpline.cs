@@ -183,6 +183,17 @@ namespace Scripts.Path
             EnforceMode(points.Length - 4);
         }
 
+        public void RemoveCurve()
+        {
+            if (points.Length > 4)
+            {
+                Array.Resize(ref points, points.Length - 3);
+                Array.Resize(ref modes, modes.Length - 1);
+            }
+
+            EnforceMode(points.Length - 4);
+        }
+
         public void Reset()
         {
             points = new Vector3[]
