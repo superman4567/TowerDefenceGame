@@ -717,6 +717,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 7c2c1b172903d0c448ee307fad4f05e1,
         type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 7c2c1b172903d0c448ee307fad4f05e1,
+        type: 3}
       propertyPath: m_TagString
       value: Barricade
       objectReference: {fileID: 0}
@@ -844,9 +849,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spline: {fileID: 1792148022}
-  meshFilter: {fileID: 0}
-  speed: 5
   progress: 0
+  maxMovementSpeed: 5
+  movementSpeed: 0
+  interpolationSpeed: 0.001
   rayLength: 1
 --- !u!1001 &1723266673
 PrefabInstance:
