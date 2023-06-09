@@ -8,19 +8,27 @@ namespace Scripts.Controller
     [RequireComponent(typeof(MeshFilter))]
     public class SplineMoveComponent : MonoBehaviour
     {
+        [Header("Spline Settings")]
         [SerializeField]
         private BezierSpline spline;
 
         [SerializeField]
-        private MeshFilter meshFilter;
-
-        private float duration;
-        private float splineLength;
-        public float speed;
-
-        [SerializeField]
         private float progress;
 
+        [Header("Movement Settings")]
+        [SerializeField]
+        private float maxMovementSpeed = 5f;
+
+        [SerializeField]
+        private float movementSpeed = 5f;
+
+        [SerializeField]
+        private float interpolationSpeed = 0.001f;
+        private float duration;
+        private float splineLength;
+        private MeshFilter meshFilter;
+
+        [Header("Collision Settings")]
         [SerializeField]
         private float rayLength = 1.0f;
 
@@ -41,7 +49,6 @@ namespace Scripts.Controller
 
             if (meshFilter != null)
             {
-                Debug.Log(meshFilter.mesh.bounds.size.z);
                 rayLength = meshFilter.mesh.bounds.size.z / 2f;
             }
         }
@@ -69,21 +76,28 @@ namespace Scripts.Controller
             return Physics.Raycast(ray, out hit, rayLength, collisionMask);
         }
 
+        private float InterpolatedSpeed(float speed)
+        {
+            movementSpeed = Mathf.Lerp(movementSpeed, speed, interpolationSpeed);
+            return movementSpeed;
+        }
+
         private void Update()
         {
             var position = spline.GetPoint(Progress);
             var direction = spline.GetDirection(Progress);
+            var increment = Time.deltaTime / (duration / maxMovementSpeed);
 
             if (IsPathBlocked(position, direction))
             {
+                movementSpeed = 0f;
                 return;
             }
 
-            Progress += Time.deltaTime / (duration / speed);
-
+            movementSpeed = InterpolatedSpeed(increment);
+            Progress += movementSpeed;
             transform.localPosition = position;
             transform.LookAt(position + direction);
-
             Finish();
         }
     }
