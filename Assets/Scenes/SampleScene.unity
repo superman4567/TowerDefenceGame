@@ -12389,9 +12389,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spline: {fileID: 1792148022}
-  meshFilter: {fileID: 0}
-  speed: 5
   progress: 0
+  maxMovementSpeed: 5
+  movementSpeed: 0
+  interpolationSpeed: 0.001
   rayLength: 1
 --- !u!1001 &1731315731
 PrefabInstance:
