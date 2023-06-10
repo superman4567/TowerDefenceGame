@@ -49,15 +49,18 @@ public class BezierSplineInspector : Editor
             "Position",
             spline.GetControlPoint(selectedIndex)
         );
+
         if (EditorGUI.EndChangeCheck())
         {
             Undo.RecordObject(spline, "Move Point");
             EditorUtility.SetDirty(spline);
             spline.SetControlPoint(selectedIndex, point);
         }
+
         EditorGUI.BeginChangeCheck();
         BezierControlPointMode mode = (BezierControlPointMode)
             EditorGUILayout.EnumPopup("Mode", spline.GetControlPointMode(selectedIndex));
+
         if (EditorGUI.EndChangeCheck())
         {
             Undo.RecordObject(spline, "Change Point Mode");
