@@ -109,6 +109,8 @@ namespace Scripts.Path
                     enforcedTangent.normalized * Vector3.Distance(middle, points[enforcedIndex]);
             }
             points[enforcedIndex] = middle + enforcedTangent;
+
+            Debug.Log("UPDATED");
         }
 
         public int CurveCount
