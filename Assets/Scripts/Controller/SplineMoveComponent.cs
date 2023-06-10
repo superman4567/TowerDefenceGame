@@ -32,6 +32,12 @@ namespace Scripts.Controller
         [SerializeField]
         private float rayLength = 1.0f;
 
+        [SerializeField]
+        private float collisionMargin = 0.001f;
+
+        [SerializeField]
+        private bool debugMode;
+
         public event OnSplineMovementFinished OnSplineMovementFinished;
 
         public float CurrentMoveSpeed => spline.GetVelocity(Progress).magnitude;
@@ -73,7 +79,12 @@ namespace Scripts.Controller
             var ray = new Ray(position, direction);
             var collisionMask = 1 << 3;
 
-            return Physics.Raycast(ray, out hit, rayLength, collisionMask);
+            if (debugMode)
+            {
+                Debug.DrawLine(position, position + direction * rayLength, Color.red, 0.1f);
+            }
+
+            return Physics.Raycast(ray, out hit, rayLength + collisionMargin, collisionMask);
         }
 
         private float InterpolatedSpeed(float speed)
