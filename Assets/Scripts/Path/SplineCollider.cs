@@ -17,13 +17,17 @@ namespace Scripts.Path
 
         private Vector3[] triangleForwardDirection;
 
-        private void Start()
+        private void Init()
         {
             spline = GetComponent<BezierSpline>();
             meshCollider = GetComponent<MeshCollider>();
 
             GenerateMeshCollider();
         }
+
+        private void Start() => Init();
+
+        private void OnValidate() => Init();
 
         private Vector3 GetRightVector(Vector3 forward)
         {

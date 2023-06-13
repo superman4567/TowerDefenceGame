@@ -1,12 +1,19 @@
-using UnityEngine;
-
 namespace Scripts.Attributes
 {
+    public delegate void OnDeath();
+    public delegate void OnDamage();
+    public delegate void OnCure();
+    public delegate void OnHeal();
+
     public interface IHealth
     {
-        void TakeDamage(float damage, EDamageType type);
+        event OnDeath OnDeath;
+        event OnDamage OnDamage;
+        event OnCure OnCure;
+        event OnHeal OnHeal;
+
+        void TakeDamage(int damage, EDamageType type);
         void Cure(EDamageType type);
-        void Heal(float amount);
-        void Die();
+        void Heal(int amount);
     }
 }

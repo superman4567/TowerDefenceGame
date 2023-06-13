@@ -7,8 +7,23 @@ namespace scripts.controller
 {
     public class Player : MonoBehaviour
     {
+        private StructurePreview previewStructure;
+
         [SerializeField]
-        private BuildPreview previewPrefab;
+        private Structure structure;
+
+        private void Start()
+        {
+            previewStructure = GetComponentInChildren<StructurePreview>();
+
+            if (!previewStructure)
+            {
+                Debug.LogError("Player is missing StructurePreview component");
+                return;
+            }
+
+            previewStructure.SetActive(false);
+        }
 
         private bool GetIntersection(out RaycastHit hit, int layerMask)
         {
@@ -28,30 +43,68 @@ namespace scripts.controller
             return null;
         }
 
-        public void PlaceItem()
+        public void BuildStructure()
+        {
+            var obj = Instantiate(
+                previewStructure.GetPrefab(),
+                previewStructure.transform.position,
+                previewStructure.transform.rotation
+            );
+        }
+
+        public void SetDefaultPositionRotationAndColor()
+        {
+            Physics.Raycast(
+                Camera.main.ScreenPointToRay(Input.mousePosition),
+                out var location,
+                1000f
+            );
+
+            previewStructure.SetPositionAndRotation(
+                location.point,
+                Quaternion.LookRotation(-Vector3.forward)
+            );
+
+            previewStructure.SetColor(Color.red);
+        }
+
+        public bool CanPlaceBuilding()
         {
             if (OnPathHit(out var hit) is var splineCollider && splineCollider)
             {
                 var forward = splineCollider.GetTriangleForward(hit.triangleIndex);
 
-                previewPrefab.transform.position = hit.point;
-                previewPrefab.transform.rotation = Quaternion.LookRotation(-forward, Vector3.up);
+                previewStructure.SetPositionAndRotation(
+                    hit.point,
+                    Quaternion.LookRotation(-forward, Vector3.up)
+                );
 
-                if (previewPrefab.CanBuild())
+                if (previewStructure.CanBuild())
                 {
-                    previewPrefab.SetColor(Color.green);
-                }
-                else
-                {
-                    previewPrefab.SetColor(Color.red);
+                    previewStructure.SetColor(Color.green);
+                    return true;
                 }
             }
+
+            SetDefaultPositionRotationAndColor();
+            return false;
         }
 
         public void Update()
         {
-            PlaceItem();
-            if (Input.GetMouseButtonDown(0)) { }
+            if (Input.GetKeyDown(KeyCode.B))
+            {
+                previewStructure.SetPrefab(structure);
+                previewStructure.SetActive(!previewStructure.IsActive());
+            }
+
+            if (previewStructure.IsActive() && CanPlaceBuilding())
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    BuildStructure();
+                }
+            }
         }
     }
 }

@@ -6,5 +6,6 @@ namespace Scripts.Utils
     {
         public const int BARRICADE = 1 << 3;
         public const int PATH = 1 << 6;
+        public const int ENEMY = 1 << 7;
     }
 }

@@ -20,7 +20,7 @@ namespace Scripts.Controller
         private float maxMovementSpeed = 5f;
 
         [SerializeField]
-        private float movementSpeed = 5f;
+        private float movementSpeed = 0f;
 
         [SerializeField]
         private float interpolationSpeed = 0.001f;
