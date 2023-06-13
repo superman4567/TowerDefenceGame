@@ -1,23 +1,70 @@
 using UnityEngine;
 using Scripts.Utils;
+using Scripts.Attributes;
 
 namespace Scripts.Building
 {
-    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-    public class Barricade : MonoBehaviour, IStructure
+    [RequireComponent(typeof(BoxCollider))]
+    public class Barricade : Structure, IHealth
     {
-        private MeshFilter meshFilter;
-        private MeshRenderer meshRenderer;
+        [Header("Barricade Settings")]
+        [SerializeField]
+        private int maxHealth = 100;
+        private int health = 100;
+
+        [SerializeField]
+        private BProperties properties;
+
+        public int Health
+        {
+            get => health;
+            private set
+            {
+                health = value;
+                if (health <= 0)
+                {
+                    health = 0;
+                    OnDeath?.Invoke();
+                }
+                else if (health > maxHealth)
+                {
+                    health = maxHealth;
+                }
+            }
+        }
+
+        private BoxCollider boxCollider;
+        public event OnDeath OnDeath;
+        public event OnDamage OnDamage;
+        public event OnCure OnCure;
+        public event OnHeal OnHeal;
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            boxCollider = GetComponent<BoxCollider>();
+            OnDeath += () => Destroy(gameObject);
+
+            Debug.Log("Called");
+        }
 
         private void Start()
         {
-            meshFilter = GetComponent<MeshFilter>();
-            meshRenderer = GetComponent<MeshRenderer>();
+            boxCollider = GetComponent<BoxCollider>();
+        }
+
+        public void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                TakeDamage(10, EDamageType.Physical);
+            }
         }
 
         private (Vector3 left, Vector3 right) CalculateRaycasts(Transform transform)
         {
-            var bounds = meshFilter.mesh.bounds;
+            var bounds = meshFilter.sharedMesh.bounds;
             var position = transform.position;
             var rotation = transform.rotation;
 
@@ -28,6 +75,20 @@ namespace Scripts.Building
             right += Vector3.up * 0.5f;
 
             return (left, right);
+        }
+
+        private bool IsNotColliding(Transform transform)
+        {
+            Awake();
+
+            return !Physics.BoxCast(
+                transform.position + Vector3.up * 10f,
+                boxCollider.size / 2,
+                Vector3.down,
+                transform.rotation,
+                10f,
+                CollisionMask.BARRICADE | CollisionMask.ENEMY
+            );
         }
 
         private bool CastRay(Vector3 direction) =>
@@ -41,14 +102,31 @@ namespace Scripts.Building
             Debug.DrawLine(rays.right, rays.right + Vector3.down * 10f, Color.red, 10f);
         }
 
-        public bool CanBuild(Transform t)
+        public override bool CanBuild(Transform t)
         {
-            return CalculateRaycasts(t) is var rays && (CastRay(rays.left) && CastRay(rays.right));
+            return IsNotColliding(t)
+                && CalculateRaycasts(t) is var rays
+                && (CastRay(rays.left) && CastRay(rays.right));
         }
 
-        public (MeshFilter filter, MeshRenderer renderer) GetMesh()
+        public void TakeDamage(int damage, EDamageType type = EDamageType.Physical)
         {
-            return (meshFilter, meshRenderer);
+            if (damage > 0)
+            {
+                Health -= (int)damage;
+                OnDamage?.Invoke();
+            }
+        }
+
+        public void Cure(EDamageType type)
+        {
+            OnCure?.Invoke();
+        }
+
+        public void Heal(int amount)
+        {
+            health += amount;
+            OnHeal?.Invoke();
         }
     }
 }
