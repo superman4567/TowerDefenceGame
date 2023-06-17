@@ -1,65 +1,23 @@
 using UnityEngine;
 using Scripts.Utils;
-using Scripts.Attributes;
 
 namespace Scripts.Building
 {
     [RequireComponent(typeof(BoxCollider))]
-    public class Barricade : Structure, IHealth
+    public class Barricade : Structure
     {
-        [Header("Barricade Settings")]
-        [SerializeField]
-        private int maxHealth = 100;
-        private int health = 100;
-
-        [SerializeField]
-        private BProperties properties;
-
-        public int Health
-        {
-            get => health;
-            private set
-            {
-                health = value;
-                if (health <= 0)
-                {
-                    health = 0;
-                    OnDeath?.Invoke();
-                }
-                else if (health > maxHealth)
-                {
-                    health = maxHealth;
-                }
-            }
-        }
-
         private BoxCollider boxCollider;
-        public event OnDeath OnDeath;
-        public event OnDamage OnDamage;
-        public event OnCure OnCure;
-        public event OnHeal OnHeal;
 
         protected override void Awake()
         {
             base.Awake();
 
             boxCollider = GetComponent<BoxCollider>();
-            OnDeath += () => Destroy(gameObject);
-
-            Debug.Log("Called");
         }
 
         private void Start()
         {
             boxCollider = GetComponent<BoxCollider>();
-        }
-
-        public void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                TakeDamage(10, EDamageType.Physical);
-            }
         }
 
         private (Vector3 left, Vector3 right) CalculateRaycasts(Transform transform)
@@ -107,26 +65,6 @@ namespace Scripts.Building
             return IsNotColliding(t)
                 && CalculateRaycasts(t) is var rays
                 && (CastRay(rays.left) && CastRay(rays.right));
-        }
-
-        public void TakeDamage(int damage, EDamageType type = EDamageType.Physical)
-        {
-            if (damage > 0)
-            {
-                Health -= (int)damage;
-                OnDamage?.Invoke();
-            }
-        }
-
-        public void Cure(EDamageType type)
-        {
-            OnCure?.Invoke();
-        }
-
-        public void Heal(int amount)
-        {
-            health += amount;
-            OnHeal?.Invoke();
         }
     }
 }

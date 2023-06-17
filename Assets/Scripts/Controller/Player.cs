@@ -7,10 +7,8 @@ namespace scripts.controller
 {
     public class Player : MonoBehaviour
     {
-        private StructurePreview previewStructure;
-
         [SerializeField]
-        private Structure structure;
+        private StructurePreview previewStructure;
 
         private void Start()
         {
@@ -94,7 +92,6 @@ namespace scripts.controller
         {
             if (Input.GetKeyDown(KeyCode.B))
             {
-                previewStructure.SetPrefab(structure);
                 previewStructure.SetActive(!previewStructure.IsActive());
             }
 

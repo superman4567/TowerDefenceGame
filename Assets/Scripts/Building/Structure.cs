@@ -28,6 +28,7 @@ namespace Scripts.Building
 
         public virtual bool CanBuild(Transform t) => true;
 
-        public (MeshFilter, MeshRenderer) GetMesh() => (meshFilter, meshRenderer);
+        public (MeshFilter, MeshRenderer) GetMesh() =>
+            (GetComponent<MeshFilter>(), GetComponent<MeshRenderer>());
     }
 }
