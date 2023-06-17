@@ -20,7 +20,10 @@ namespace Scripts.Building
             meshRenderer = GetComponent<MeshRenderer>();
         }
 
-        private void Start() => SetPrefab(structure);
+        private void Start()
+        {
+            SetPrefab(structure);
+        }
 
         public void SetPrefab(Structure structure)
         {

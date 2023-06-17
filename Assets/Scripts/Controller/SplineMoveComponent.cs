@@ -97,9 +97,10 @@ namespace Scripts.Controller
         {
             var position = spline.GetPoint(Progress);
             var direction = spline.GetDirection(Progress);
+            var origin = position + new Vector3(0f, meshFilter.mesh.bounds.size.y / 2f, 0f);
             var increment = Time.deltaTime / (duration / maxMovementSpeed);
 
-            if (IsPathBlocked(position, direction))
+            if (IsPathBlocked(origin, direction))
             {
                 movementSpeed = 0f;
                 return;
@@ -107,8 +108,15 @@ namespace Scripts.Controller
 
             movementSpeed = InterpolatedSpeed(increment);
             Progress += movementSpeed;
-            transform.localPosition = position;
-            transform.LookAt(position + direction);
+            transform.localPosition = new Vector3(
+                position.x,
+                transform.localPosition.y,
+                position.z
+            );
+
+            var lookDir = transform.position + direction;
+            Debug.Log(lookDir);
+            transform.LookAt(lookDir);
             Finish();
         }
     }
